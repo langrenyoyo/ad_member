@@ -1,0 +1,8 @@
+﻿=>n.e("chunk-08ea36cb").then(n.bind(null,"e2f1"))}]}];var F=[{path:"/application",name:"application",meta:{title:"应用"},redirect:"/application/app",component:D,children:[{path:"/application/app",name:"application_app",meta:{title:"应用中心",parentPath:"/application",icon:"icon_yingyongcenter",permission:["view"]},component:()=>n.e("chunk-7409db76").then(n.bind(null,"7477"))}]},{path:"/article",name:"article",meta:{hidden:!0,title:"文章资讯",moduleName:"article"},redirect:"/article",component:D,children:[
+---
+
+=== application route block ===
+name:"application",meta:{title:"应用"
+
+=== application route block ===
+name:"application_app",meta:{title:"应用中心",parentPath:"/application",icon:"icon_yingyongcenter",permission:["view"]

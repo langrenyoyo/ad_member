@@ -1,0 +1,27 @@
+﻿=== mas/application/game APIs ===
+/application
+/application/app
+/mas/
+account
+account_log
+application
+application/json
+application_app
+
+--- account/login ---
+{this.$store.commit("setPermission",{}),this.$router.push("/account/login")})}resetPassword(){Object(u.b)(this.formData).then(e=>{this.$refs.lsDialog.close(),this.logout()})}handle
+
+--- account/login ---
+04"},{path:"/account",name:"account",component:d,redirect:"/account/login",children:[{path:"login",name:"login",meta:{title:"登录",parentPath:"/account"},component:()=>n.e("chunk-611
+
+--- account/login ---
+"setUserInfo",{}),i.a.commit("setPermission",{}),l.b.push("/account/login"),Promise.reject())),page:({data:e})=>(window.location.href=e.url,e),tips:({code:e,msg:t})=>({code:e,msg:t
+
+--- application/ ---
+pplication",name:"application",meta:{title:"应用"},redirect:"/application/app",component:D,children:[{path:"/application/app",name:"application_app",meta:{title:"应用中心",parentPath:"/a
+
+--- application/ ---
+},redirect:"/application/app",component:D,children:[{path:"/application/app",name:"application_app",meta:{title:"应用中心",parentPath:"/application",icon:"icon_yingyongcenter",permissi
+
+--- application/ ---
+");const u={baseURL:""+r.a.baseURL,headers:{"content-type":"application/json","X-Requested-With":"XMLHttpRequest"}},p={success:e=>e,error:({msg:e})=>(Object(d.Message)({type:"error

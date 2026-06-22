@@ -1,0 +1,63 @@
+﻿=== Routes ===
+/advertisement
+/advertisement/control
+/advertisement/control_setting
+/advertisement/player_setting
+/application
+/application/app
+/channel/app_store/app_store
+/channel/wechat_app/wechat_app
+/data/user
+/decorate/user
+/distribution/advertisement
+/distribution/advertisement_log
+/distribution/advertisement_record
+/distribution/distribution_userList_proxy
+/distribution/distribution_userList_team
+/distribution/user
+/distribution/userList
+/distribution/userPromotion
+/distribution/userWhiteList
+/distribution/user_detail
+/distribution/user_wallets
+/evaluation/add
+/finance/user_withdrawal
+/live_broadcast
+/live_broadcast/add_broadcast_goods
+/live_broadcast/edit
+/live_broadcast/goods
+/live_broadcast/lists
+/setting/permissions/admin
+/setting/permissions/admin_edit
+/setting/user/login_register
+/setting/user/user_setting
+/setting/user/withdraw_deposit
+/shop/pc/adv
+/shop/user
+/user
+/user/grade
+/user/grade_edit
+/user/invitation_list
+/user/lists
+/user/profile
+/user/tag
+/user/tag_edit
+/user/user_details
+
+=== Login context ===
+icleType",n)}},actions:{login({commit:e},t){const{username:n,password:a}=t;return new Promise((n,a)=>{Object(c.e)({...t}).then(t=>{e("setLoginUrl",t.logo),n(t)}).catch(e=>{a(e)})})},logout:({commit:e})=>new Promise((t,n)=>{Object(c.f)().then(n=>{e("setToken",""),e("setUserInfo",{}),r.a.remove("token"),t(n)}).catch(e=>{n(e)})}),getUser:({commit:e})=>new Promise((t,n)=>{Object(c.a)().then(n=>{e("set
+
+--- baseURL at 105724 ---
+,d70b:function(e,t,n){"use strict";const a=location.origin;t.a={version:"3.1.0",baseURL:"/mas/",tencentMapKey:"FWEBZ-WHSHV-IRFPO-UNMRL-5EUWV-BFBFW",baseImage:a,baseUploadImage:a+"/mas/"}},d80c:functio
+
+--- baseURL at 108324 ---
+),o=n.n(c),r=n("d70b"),s=n("4201"),l=n("afbc"),d=n("5c96"),h=n("6ddb");const u={baseURL:""+r.a.baseURL,headers:{"content-type":"application/json","X-Requested-With":"XMLHttpRequest"}},p={success:e=>e,
+
+--- baseURL at 108339 ---
+"d70b"),s=n("4201"),l=n("afbc"),d=n("5c96"),h=n("6ddb");const u={baseURL:""+r.a.baseURL,headers:{"content-type":"application/json","X-Requested-With":"XMLHttpRequest"}},p={success:e=>e,error:({msg:e})
+
+--- axios at 109122 ---
+{type:"error",message:"系统错误，请稍候再试"}),Promise.reject(e)));const f={install:e=>{e.axios=m,Object.defineProperties(e.prototype,{$axios:{get:()=>m}})}};a.default.use(f),t.a=m},f6e9:function(e,t,n){e.expor
+
+--- axios at 109168 ---
+eject(e)));const f={install:e=>{e.axios=m,Object.defineProperties(e.prototype,{$axios:{get:()=>m}})}};a.default.use(f),t.a=m},f6e9:function(e,t,n){e.exports={primary:"#4073fa",white:"#fff",asideMenuWi
