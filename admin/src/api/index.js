@@ -8,6 +8,8 @@ export const getOverview = () => request.get('/index/index')
 export const getActiveMembers = (time) => request.get('/index/member', { params: { time } })
 
 export const getMemberList = (params) => request.get('/member/index', { params })
+export const getMemberStats = () => request.get('/member/stats')
+export const getMemberDetail = (uid) => request.get('/member/detail', { params: { uid } })
 export const getMemberDevices = (uid) => request.get('/member/devices', { params: { uid } })
 export const bindMemberDevice = (data) => request.post('/member/device/bind', data)
 export const getMemberEdit = (uid) => request.get('/member/edit', { params: { uid } })

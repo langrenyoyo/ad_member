@@ -26,22 +26,22 @@ const routes = [
         meta: { title: '数据报表', parent: '用户管理' },
       },
       {
+        path: 'distribution/users',
+        name: 'user_center',
+        component: () => import('@/views/distribution/UserCenter.vue'),
+        meta: { title: '用户中心', parent: '用户管理' },
+      },
+      {
         path: 'distribution/userList',
-        name: 'userList',
-        component: () => import('@/views/distribution/UserList.vue'),
-        meta: { title: '用户列表', parent: '用户管理', agent: 0 },
+        redirect: '/distribution/users',
       },
       {
         path: 'distribution/distribution_userList_proxy',
-        name: 'userList_proxy',
-        component: () => import('@/views/distribution/UserList.vue'),
-        meta: { title: '代理列表', parent: '用户管理', agent: 1 },
+        redirect: '/distribution/users',
       },
       {
         path: 'distribution/userPromotion',
-        name: 'userPromotion',
-        component: () => import('@/views/distribution/UserPromotion.vue'),
-        meta: { title: '推广数据', parent: '用户管理' },
+        redirect: '/distribution/users',
       },
       {
         path: 'risk/config',

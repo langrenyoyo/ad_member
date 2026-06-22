@@ -19,9 +19,7 @@
           </template>
           <el-menu-item index="/distribution/overview">数据概览</el-menu-item>
           <el-menu-item index="/distribution/statement">数据报表</el-menu-item>
-          <el-menu-item index="/distribution/userList">用户列表</el-menu-item>
-          <el-menu-item index="/distribution/distribution_userList_proxy">代理列表</el-menu-item>
-          <el-menu-item index="/distribution/userPromotion">推广数据</el-menu-item>
+          <el-menu-item index="/distribution/users">用户中心</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="risk">
           <template #title>
