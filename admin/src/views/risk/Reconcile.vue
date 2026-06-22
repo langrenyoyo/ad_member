@@ -12,7 +12,7 @@
         <el-button type="primary" @click="handleRun" :loading="running">执行对账</el-button>
         <el-button @click="load">刷新列表</el-button>
       </div>
-      <p class="hint">每日对比预估 vs 已确认收益，GAP 超阈值标记 alert；同时释放 T+N 可提现余额。</p>
+      <p class="hint">每日对比预估与已确认收益，GAP 超阈值标记为告警；同时释放 T+N 可提现余额。</p>
 
       <el-table :data="list" v-loading="loading" class="m-t-16">
         <el-table-column prop="date" label="日期" width="120" />
@@ -29,8 +29,8 @@
         <el-table-column prop="clawback_amount" label="扣回" width="80" />
         <el-table-column prop="status" label="状态" width="90">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'alert' ? 'danger' : 'success'" size="small">
-              {{ row.status }}
+            <el-tag :type="reconcileStatusType(row.status)" size="small">
+              {{ reconcileStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -44,6 +44,7 @@
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getReconcileDaily, runReconcile } from '@/api'
+import { reconcileStatusLabel, reconcileStatusType } from '@/utils/statusLabels'
 
 const loading = ref(false)
 const running = ref(false)

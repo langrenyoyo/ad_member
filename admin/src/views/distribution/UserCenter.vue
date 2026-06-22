@@ -11,7 +11,7 @@
         <div class="value">{{ stats.today_active || 0 }}</div>
       </div>
       <div class="stat-item clickable" @click="filterPromoter">
-        <div class="label">代理/团长</div>
+        <div class="label">代理</div>
         <div class="value">{{ stats.promoters || 0 }}</div>
       </div>
       <div class="stat-item clickable" @click="filterAbnormal">
@@ -42,7 +42,6 @@
           <el-option label="全部角色" value="" />
           <el-option label="普通用户" value="0" />
           <el-option label="代理" value="1" />
-          <el-option label="团长" value="2" />
           <el-option label="全部推广员" value="promoter" />
         </el-select>
         <el-select v-model="filters.status" placeholder="账号状态" clearable style="width: 120px">
@@ -159,11 +158,11 @@ function fmt(n) {
 }
 
 function roleLabel(t) {
-  return t === 2 ? '团长' : t === 1 ? '代理' : '普通'
+  return t === 1 ? '代理' : '普通'
 }
 
 function roleTag(t) {
-  return t === 2 ? 'danger' : t === 1 ? 'warning' : 'info'
+  return t === 1 ? 'warning' : 'info'
 }
 
 function shortId(id) {

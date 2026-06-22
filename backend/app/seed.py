@@ -36,7 +36,6 @@ def _seed_initial(db: Session) -> None:
     levels = [
         DistributionLevel(name="普通用户", rate=0.3),
         DistributionLevel(name="代理", rate=0.5),
-        DistributionLevel(name="团长", rate=0.7),
     ]
     db.add_all(levels)
     db.flush()
@@ -78,7 +77,7 @@ def _seed_initial(db: Session) -> None:
     uniques = ["oaid_demo_001", "idfa_demo_002", "", "oaid_demo_004", "", "idfa_demo_006"]
     now = datetime.utcnow()
     for i in range(1, 26):
-        agent = 0 if i % 5 else (1 if i % 2 else 2)
+        agent = 0 if i % 5 else 1
         reward = round(random.uniform(10, 500), 2)
         pending = round(random.uniform(0, 20), 2)
         confirmed = round(reward * 0.85, 2)
@@ -89,7 +88,7 @@ def _seed_initial(db: Session) -> None:
             nickname=f"用户{i}",
             mobile=f"138{random.randint(10000000, 99999999)}",
             agent_type=agent,
-            level_id=1 if agent == 0 else (2 if agent == 1 else 3),
+            level_id=1 if agent == 0 else 2,
             total_revenue=reward,
             today_revenue=round(random.uniform(0, 20), 2),
             estimated_balance=reward,

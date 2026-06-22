@@ -64,10 +64,12 @@
         </el-table-column>
         <el-table-column prop="platform" label="平台" width="80">
           <template #default="{ row }">
-            {{ row.platform === 1 ? 'Android' : row.platform === 2 ? 'iOS' : '未知' }}
+            {{ platformLabel(row.platform) }}
           </template>
         </el-table-column>
-        <el-table-column prop="source" label="来源" width="80" />
+        <el-table-column prop="source" label="来源" width="80">
+          <template #default="{ row }">{{ deviceSourceLabel(row.source) }}</template>
+        </el-table-column>
         <el-table-column prop="updated_at" label="更新时间" width="170" />
       </el-table>
     </el-dialog>
@@ -77,7 +79,9 @@
         <el-table-column prop="app_name" label="应用" />
         <el-table-column prop="placement" label="广告位" />
         <el-table-column prop="revenue" label="收益" width="80" />
-        <el-table-column prop="action" label="动作" width="80" />
+        <el-table-column prop="action" label="动作" width="80">
+          <template #default="{ row }">{{ adActionLabel(row.action) }}</template>
+        </el-table-column>
         <el-table-column prop="created_at" label="时间" width="170" />
       </el-table>
     </el-dialog>
@@ -96,6 +100,11 @@ import {
   openMember,
   blacklistMember,
 } from '@/api'
+import {
+  adActionLabel,
+  deviceSourceLabel,
+  platformLabel,
+} from '@/utils/statusLabels'
 
 const route = useRoute()
 const agent = computed(() => route.meta.agent ?? undefined)
@@ -114,7 +123,7 @@ const deviceUid = ref('')
 const deviceLogs = ref([])
 
 function agentLabel(t) {
-  return t === 1 ? '代理' : t === 2 ? '团长' : '普通'
+  return t === 1 ? '代理' : '普通'
 }
 
 async function loadData() {

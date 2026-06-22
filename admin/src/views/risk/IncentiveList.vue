@@ -4,10 +4,10 @@
       <div class="toolbar">
         <el-input v-model="query.uid" placeholder="UID" clearable style="width: 140px" />
         <el-select v-model="query.status" placeholder="状态" clearable style="width: 140px">
-          <el-option label="待确认 pending" value="pending" />
-          <el-option label="已确认 confirmed" value="confirmed" />
-          <el-option label="已扣回 clawback" value="clawback" />
-          <el-option label="已拒绝 rejected" value="rejected" />
+          <el-option label="待确认" value="pending" />
+          <el-option label="已确认" value="confirmed" />
+          <el-option label="已扣回" value="clawback" />
+          <el-option label="已拒绝" value="rejected" />
         </el-select>
         <el-button type="primary" @click="load">查询</el-button>
       </div>
@@ -25,7 +25,9 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="statusType(row.status)" size="small">{{ row.status }}</el-tag>
+            <el-tag :type="incentiveStatusType(row.status)" size="small">
+              {{ incentiveStatusLabel(row.status) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="risk_score" label="风险分" width="80" />
@@ -49,16 +51,12 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { getIncentiveTransactions } from '@/api'
+import { incentiveStatusLabel, incentiveStatusType } from '@/utils/statusLabels'
 
 const loading = ref(false)
 const list = ref([])
 const total = ref(0)
 const query = reactive({ page: 1, limit: 20, uid: '', status: '' })
-
-function statusType(s) {
-  const map = { pending: 'warning', confirmed: 'success', clawback: 'danger', rejected: 'info' }
-  return map[s] || 'info'
-}
 
 async function load() {
   loading.value = true

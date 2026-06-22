@@ -25,7 +25,7 @@
           <div class="value danger">{{ fmt(summary.total_deduction) }}</div>
         </div>
         <div class="stat-item">
-          <div class="label">已扣回 clawback</div>
+          <div class="label">已扣回</div>
           <div class="value">{{ fmt(summary.clawback_amount) }}</div>
           <div class="sub">{{ summary.clawback_count || 0 }} 笔</div>
         </div>
@@ -107,6 +107,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { getClawbackSummary, getClawbackUsers, getClawbackDetail } from '@/api'
+import { deductionTypeLabel, deductionTypeTag } from '@/utils/statusLabels'
 
 const loading = ref(false)
 const summaryLoading = ref(false)
@@ -132,13 +133,11 @@ function dateParams() {
 }
 
 function typeLabel(t) {
-  const map = { clawback: '已扣回', rejected: '风控拒绝', pending_lost: '回调未齐' }
-  return map[t] || t
+  return deductionTypeLabel(t)
 }
 
 function typeTag(t) {
-  const map = { clawback: 'danger', rejected: 'warning', pending_lost: 'info' }
-  return map[t] || 'info'
+  return deductionTypeTag(t)
 }
 
 async function loadSummary() {

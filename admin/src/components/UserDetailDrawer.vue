@@ -60,8 +60,8 @@
 
         <!-- 风控摘要 -->
         <div class="risk-summary m-t-16">
-          <el-tag type="info">激励 pending {{ detail.tx_pending || 0 }}</el-tag>
-          <el-tag type="success">confirmed {{ detail.tx_confirmed || 0 }}</el-tag>
+          <el-tag type="info">待确认 {{ detail.tx_pending || 0 }}</el-tag>
+          <el-tag type="success">已确认 {{ detail.tx_confirmed || 0 }}</el-tag>
           <el-tag type="danger">核减 {{ detail.tx_clawback || 0 }} / {{ fmt(detail.clawback_amount) }}</el-tag>
           <el-tag type="warning">风控拦截 {{ detail.risk_blocks || 0 }}</el-tag>
         </div>
@@ -73,13 +73,15 @@
               <el-table-column prop="user_reward" label="奖励" width="70" />
               <el-table-column prop="status" label="状态" width="90">
                 <template #default="{ row }">
-                  <el-tag :type="txTag(row.status)" size="small">{{ row.status }}</el-tag>
+                  <el-tag :type="incentiveStatusType(row.status)" size="small">
+                    {{ incentiveStatusLabel(row.status) }}
+                  </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column label="双回调" width="90">
+              <el-table-column label="双回调" width="100">
                 <template #default="{ row }">
-                  <span :class="row.kuaishou_verified ? 'ok' : 'no'">K</span>
-                  <span :class="row.taku_verified ? 'ok' : 'no'">T</span>
+                  <el-tag :type="row.kuaishou_verified ? 'success' : 'info'" size="small">快手</el-tag>
+                  <el-tag :type="row.taku_verified ? 'success' : 'info'" size="small" class="m-l-4">Taku</el-tag>
                 </template>
               </el-table-column>
               <el-table-column prop="created_at" label="时间" width="155" />
@@ -90,7 +92,9 @@
               <el-table-column prop="app_name" label="应用" />
               <el-table-column prop="placement" label="广告位" />
               <el-table-column prop="revenue" label="收益" width="70" />
-              <el-table-column prop="action" label="动作" width="80" />
+              <el-table-column prop="action" label="动作" width="80">
+                <template #default="{ row }">{{ adActionLabel(row.action) }}</template>
+              </el-table-column>
               <el-table-column prop="created_at" label="时间" width="155" />
             </el-table>
           </el-tab-pane>
@@ -102,10 +106,12 @@
               </el-table-column>
               <el-table-column prop="platform" label="平台" width="70">
                 <template #default="{ row }">
-                  {{ row.platform === 1 ? 'Android' : row.platform === 2 ? 'iOS' : '—' }}
+                  {{ platformLabel(row.platform) }}
                 </template>
               </el-table-column>
-              <el-table-column prop="source" label="来源" width="70" />
+              <el-table-column prop="source" label="来源" width="80">
+                <template #default="{ row }">{{ deviceSourceLabel(row.source) }}</template>
+              </el-table-column>
               <el-table-column prop="updated_at" label="更新" width="155" />
             </el-table>
           </el-tab-pane>
@@ -113,7 +119,13 @@
             <el-table :data="clawbacks" size="small" max-height="320">
               <el-table-column prop="trans_id" label="事务ID" min-width="120" show-overflow-tooltip />
               <el-table-column prop="user_reward" label="金额" width="70" />
-              <el-table-column prop="deduction_type" label="类型" width="90" />
+              <el-table-column prop="deduction_type" label="类型" width="100">
+                <template #default="{ row }">
+                  <el-tag :type="deductionTypeTag(row.deduction_type)" size="small">
+                    {{ deductionTypeLabel(row.deduction_type) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
               <el-table-column prop="reason" label="原因" show-overflow-tooltip />
               <el-table-column prop="created_at" label="时间" width="155" />
             </el-table>
@@ -137,6 +149,15 @@ import {
   openMember,
   blacklistMember,
 } from '@/api'
+import {
+  adActionLabel,
+  deductionTypeLabel,
+  deductionTypeTag,
+  deviceSourceLabel,
+  incentiveStatusLabel,
+  incentiveStatusType,
+  platformLabel,
+} from '@/utils/statusLabels'
 
 const props = defineProps({
   visible: Boolean,
@@ -157,15 +178,11 @@ function fmt(n) {
 }
 
 function roleLabel(t) {
-  return t === 2 ? '团长' : t === 1 ? '代理' : '普通用户'
+  return t === 1 ? '代理' : '普通用户'
 }
 
 function roleTag(t) {
-  return t === 2 ? 'danger' : t === 1 ? 'warning' : 'info'
-}
-
-function txTag(s) {
-  return { pending: 'warning', confirmed: 'success', clawback: 'danger', rejected: 'info' }[s] || 'info'
+  return t === 1 ? 'warning' : 'info'
 }
 
 async function loadAll() {

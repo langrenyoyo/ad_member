@@ -11,7 +11,9 @@
             <el-table-column prop="total_score" label="总分" width="70" />
             <el-table-column prop="action" label="动作" width="80">
               <template #default="{ row }">
-                <el-tag :type="row.action === 'block' ? 'danger' : 'success'" size="small">{{ row.action }}</el-tag>
+                <el-tag :type="riskActionType(row.action)" size="small">
+                  {{ riskActionLabel(row.action) }}
+                </el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="detail" label="详情" />
@@ -25,7 +27,11 @@
           <el-table :data="containment" v-loading="loadingContainment">
             <el-table-column prop="uid" label="UID" width="100" />
             <el-table-column prop="reason" label="原因" />
-            <el-table-column prop="action" label="动作" width="100" />
+            <el-table-column prop="action" label="动作" width="100">
+              <template #default="{ row }">
+                {{ riskActionLabel(row.action) }}
+              </template>
+            </el-table-column>
             <el-table-column prop="created_at" label="时间" width="170" />
           </el-table>
         </div>
@@ -34,7 +40,11 @@
       <el-tab-pane label="回调日志" name="callbacks">
         <div class="ls-card">
           <el-table :data="callbacks" v-loading="loadingCallbacks">
-            <el-table-column prop="source" label="来源" width="90" />
+            <el-table-column prop="source" label="来源" width="90">
+              <template #default="{ row }">
+                {{ callbackSourceLabel(row.source) }}
+              </template>
+            </el-table-column>
             <el-table-column prop="trans_id" label="事务ID" min-width="140" show-overflow-tooltip />
             <el-table-column prop="sign_ok" label="验签" width="80">
               <template #default="{ row }">
@@ -55,6 +65,11 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { getCallbackLogs, getContainmentLog, getRiskDecisions } from '@/api'
+import {
+  callbackSourceLabel,
+  riskActionLabel,
+  riskActionType,
+} from '@/utils/statusLabels'
 
 const tab = ref('decisions')
 const loadingDecisions = ref(false)

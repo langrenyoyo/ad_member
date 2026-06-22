@@ -9,7 +9,7 @@
         <el-table-column prop="app_id" label="App ID" min-width="140" />
         <el-table-column prop="app_name" label="应用名称" />
         <el-table-column prop="platform" label="平台" width="90">
-          <template #default="{ row }">{{ row.platform === 1 ? 'Android' : 'iOS' }}</template>
+          <template #default="{ row }">{{ platformLabel(row.platform) }}</template>
         </el-table-column>
         <el-table-column prop="package_name" label="包名" min-width="160" show-overflow-tooltip />
         <el-table-column prop="kuaishou_security_key" label="快手 SecurityKey" min-width="140" show-overflow-tooltip />
@@ -23,7 +23,7 @@
         <el-form-item label="应用名称"><el-input v-model="form.app_name" /></el-form-item>
         <el-form-item label="平台">
           <el-select v-model="form.platform">
-            <el-option label="Android" :value="1" />
+            <el-option label="安卓" :value="1" />
             <el-option label="iOS" :value="2" />
           </el-select>
         </el-form-item>
@@ -44,6 +44,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getTakuApps, syncTakuApp } from '@/api'
+import { platformLabel } from '@/utils/statusLabels'
 
 const apps = ref([])
 const showDialog = ref(false)

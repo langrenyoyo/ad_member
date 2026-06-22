@@ -33,7 +33,7 @@
             <el-table-column prop="app_id" label="App ID" />
             <el-table-column prop="app_name" label="应用名称" />
             <el-table-column prop="platform" label="平台" width="100">
-              <template #default="{ row }">{{ row.platform === 1 ? 'Android' : 'iOS' }}</template>
+              <template #default="{ row }">{{ platformLabel(row.platform) }}</template>
             </el-table-column>
             <el-table-column prop="package_name" label="包名" />
             <el-table-column prop="synced_at" label="同步时间" width="180" />
@@ -46,7 +46,9 @@
           <el-table :data="riskLogs" v-loading="riskLoading">
             <el-table-column prop="uid" label="UID" width="120" />
             <el-table-column prop="reason" label="原因" />
-            <el-table-column prop="action" label="动作" width="100" />
+            <el-table-column prop="action" label="动作" width="100">
+              <template #default="{ row }">{{ riskActionLabel(row.action) }}</template>
+            </el-table-column>
             <el-table-column prop="created_at" label="时间" width="180" />
           </el-table>
         </div>
@@ -59,7 +61,7 @@
         <el-form-item label="应用名称"><el-input v-model="syncForm.app_name" /></el-form-item>
         <el-form-item label="平台">
           <el-select v-model="syncForm.platform">
-            <el-option label="Android" :value="1" />
+            <el-option label="安卓" :value="1" />
             <el-option label="iOS" :value="2" />
           </el-select>
         </el-form-item>
@@ -77,6 +79,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getConfig, saveConfig, getTakuApps, syncTakuApp, getContainmentLog } from '@/api'
+import { platformLabel, riskActionLabel } from '@/utils/statusLabels'
 
 const activeTab = ref('config')
 const loading = ref(false)

@@ -23,7 +23,7 @@ class Member(Base):
     uid: Mapped[str] = mapped_column(String(32), unique=True, index=True)
     nickname: Mapped[str] = mapped_column(String(64), default="")
     mobile: Mapped[str] = mapped_column(String(20), default="")
-    agent_type: Mapped[int] = mapped_column(Integer, default=0)  # 0普通 1代理 2团长
+    agent_type: Mapped[int] = mapped_column(Integer, default=0)  # 0普通 1代理
     level_id: Mapped[int] = mapped_column(Integer, default=1)
     status: Mapped[int] = mapped_column(Integer, default=1)  # 1正常 0冻结
     total_revenue: Mapped[float] = mapped_column(Float, default=0.0)

@@ -16,15 +16,15 @@
           <div class="value">{{ fmt(data.withdrawable_balance) }}</div>
         </div>
         <div class="stat-item">
-          <div class="label">待确认 pending</div>
+          <div class="label">待确认余额</div>
           <div class="value">{{ fmt(data.pending_balance) }}</div>
         </div>
         <div class="stat-item">
-          <div class="label">今日激励 pending</div>
+          <div class="label">今日激励待确认</div>
           <div class="value">{{ data.today_tx_pending || 0 }}</div>
         </div>
         <div class="stat-item">
-          <div class="label">今日激励 confirmed</div>
+          <div class="label">今日激励已确认</div>
           <div class="value">{{ data.today_tx_confirmed || 0 }}</div>
         </div>
         <div class="stat-item">

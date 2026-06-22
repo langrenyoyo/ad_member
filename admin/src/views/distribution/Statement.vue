@@ -33,7 +33,9 @@
         <el-table-column prop="app_name" label="应用" />
         <el-table-column prop="placement" label="广告位" />
         <el-table-column prop="revenue" label="收益" width="80" />
-        <el-table-column prop="action" label="动作" width="80" />
+        <el-table-column prop="action" label="动作" width="80">
+          <template #default="{ row }">{{ adActionLabel(row.action) }}</template>
+        </el-table-column>
         <el-table-column prop="created_at" label="时间" width="180" />
       </el-table>
     </div>
@@ -43,6 +45,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { getDailyReport, getAdverLog } from '@/api'
+import { adActionLabel } from '@/utils/statusLabels'
 
 const date = ref(new Date().toISOString().split('T')[0])
 const report = ref(null)

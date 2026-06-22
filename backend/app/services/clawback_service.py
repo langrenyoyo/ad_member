@@ -131,8 +131,13 @@ def clawback_users_query(
     if uid:
         q = q.filter(IncentiveTransaction.uid.contains(uid))
 
-    q = q.group_by(IncentiveTransaction.uid).filter(total_deduction > min_amount)
+    q = q.group_by(IncentiveTransaction.uid)
+    if min_amount > 0:
+        q = q.having(total_deduction > min_amount)
     rows = q.order_by(total_deduction.desc()).all()
+
+    if not rows:
+        return []
 
     members = {
         m.uid: m
