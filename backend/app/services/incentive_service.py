@@ -1,7 +1,9 @@
 import hashlib
+import hmac
 import json
 from datetime import date, datetime, timedelta
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from ..models import AdLog, CallbackLog, IncentiveTransaction, Member
@@ -15,6 +17,31 @@ def verify_kuaishou_sign(app_security_key: str, trans_id: str, sign: str) -> boo
         return False
     expected = hashlib.md5(f"{app_security_key}:{trans_id}".encode()).hexdigest()
     return expected.lower() == sign.lower()
+
+
+def verify_network_sign(
+    secret: str,
+    trans_id: str,
+    sign: str,
+    method: str,
+    params: dict,
+) -> bool:
+    if not secret or not trans_id or not sign:
+        return False
+    if method == "hmac_sha256":
+        expected = hmac.new(secret.encode(), trans_id.encode(), hashlib.sha256).hexdigest()
+    elif method == "sha256_secret_colon_transid":
+        expected = hashlib.sha256(f"{secret}:{trans_id}".encode()).hexdigest()
+    elif method == "md5_canonical":
+        canonical = "&".join(
+            f"{key}={params[key]}"
+            for key in sorted(params)
+            if key not in {"sign", "signature"} and params[key] is not None
+        )
+        expected = hashlib.md5(f"{canonical}&key={secret}".encode()).hexdigest()
+    else:
+        expected = hashlib.md5(f"{secret}:{trans_id}".encode()).hexdigest()
+    return hmac.compare_digest(expected.lower(), sign.lower())
 
 
 def calc_user_reward(db: Session, revenue: float, member: Member | None) -> float:
@@ -63,7 +90,8 @@ def _apply_clawback(member: Member, amount: float) -> None:
 def try_confirm_transaction(db: Session, tx: IncentiveTransaction) -> bool:
     if tx.status != "pending":
         return False
-    if not tx.kuaishou_verified or not tx.taku_verified or not tx.risk_passed:
+    network_verified = tx.network_verified or tx.kuaishou_verified
+    if not network_verified or not tx.taku_verified or not tx.risk_passed:
         return False
 
     member = db.query(Member).filter(Member.uid == tx.uid).first()
@@ -123,6 +151,9 @@ def process_kuaishou_callback(
         tx = existing
         tx.kuaishou_verified = True
         tx.kuaishou_at = datetime.utcnow()
+        tx.network_code = "kuaishou"
+        tx.network_verified = True
+        tx.network_at = tx.kuaishou_at
         tx.revenue = revenue or tx.revenue
         tx.user_reward = user_reward or tx.user_reward
         tx.risk_score = risk_score
@@ -138,6 +169,9 @@ def process_kuaishou_callback(
             status="rejected" if not passed else "pending",
             kuaishou_verified=True,
             kuaishou_at=datetime.utcnow(),
+            network_code="kuaishou",
+            network_verified=True,
+            network_at=datetime.utcnow(),
             device_id=device_id,
             ip=ip,
             risk_score=risk_score,
@@ -166,6 +200,110 @@ def process_kuaishou_callback(
         "status": tx.status,
         "user_reward": tx.user_reward,
         "ui_reward": tx.user_reward if passed else 0,
+    }
+
+
+def process_ad_network_callback(
+    db: Session,
+    params: dict,
+    network_code: str,
+    security_key: str,
+    sign_method: str,
+    raw_body: str = "",
+) -> dict:
+    trans_id = str(
+        params.get("transId") or params.get("trans_id") or params.get("transaction_id") or ""
+    )
+    uid = str(params.get("userId") or params.get("user_id") or params.get("uid") or "")
+    sign = str(params.get("sign") or params.get("signature") or "")
+    app_id = str(params.get("appId") or params.get("app_id") or "")
+    placement_id = str(
+        params.get("placementId") or params.get("placement_id") or params.get("pos_id") or ""
+    )
+    device_id = str(params.get("deviceId") or params.get("device_id") or params.get("oaid") or "")
+    ip = str(params.get("ip") or "")
+    try:
+        revenue = float(
+            params.get("revenue") or params.get("amount") or params.get("reward_amount") or 0
+        )
+    except (TypeError, ValueError):
+        revenue = 0.0
+
+    sign_ok = verify_network_sign(security_key, trans_id, sign, sign_method, params)
+    db.add(CallbackLog(
+        source=network_code,
+        trans_id=trans_id,
+        sign_ok=sign_ok,
+        raw_body=raw_body or json.dumps(params, ensure_ascii=False),
+    ))
+    if not sign_ok:
+        db.commit()
+        return {"ok": False, "reason": "sign_invalid"}
+    if not trans_id or not uid:
+        db.commit()
+        return {"ok": False, "reason": "missing_identity"}
+
+    bind_member_device_from_params(db, uid, params, network_code)
+    existing = db.query(IncentiveTransaction).filter(
+        IncentiveTransaction.trans_id == trans_id
+    ).first()
+    if existing and existing.network_verified:
+        db.commit()
+        return {"ok": True, "duplicate": True, "trans_id": trans_id, "status": existing.status}
+
+    passed, risk_score, _ = evaluate_risk(db, uid, device_id, ip, trans_id)
+    member = _get_or_create_member(db, uid)
+    user_reward = calc_user_reward(db, revenue, member)
+    now = datetime.utcnow()
+    if existing:
+        tx = existing
+        tx.network_code = network_code
+        tx.network_verified = True
+        tx.network_at = now
+        tx.revenue = revenue or tx.revenue
+        tx.user_reward = user_reward or tx.user_reward
+        tx.risk_score = risk_score
+        tx.risk_passed = passed
+        if not passed and tx.status == "pending":
+            tx.status = "rejected"
+    else:
+        tx = IncentiveTransaction(
+            trans_id=trans_id,
+            uid=uid,
+            app_id=app_id,
+            placement_id=placement_id,
+            network_code=network_code,
+            network_verified=True,
+            network_at=now,
+            revenue=revenue,
+            user_reward=user_reward,
+            status="pending" if passed else "rejected",
+            device_id=device_id,
+            ip=ip,
+            risk_score=risk_score,
+            risk_passed=passed,
+        )
+        db.add(tx)
+        db.flush()
+
+    if passed and tx.status == "pending":
+        _apply_pending(member, tx.user_reward)
+        db.add(AdLog(
+            uid=uid,
+            app_name=app_id or network_code,
+            placement=placement_id or "reward_video",
+            revenue=tx.user_reward,
+            action="reward_pending",
+        ))
+
+    try_confirm_transaction(db, tx)
+    db.commit()
+    return {
+        "ok": True,
+        "trans_id": tx.trans_id,
+        "network_code": network_code,
+        "status": tx.status,
+        "user_reward": tx.user_reward,
     }
 
 
@@ -278,7 +416,10 @@ def process_daily_clawbacks(db: Session, target: date) -> int:
         IncentiveTransaction.status == "pending",
         IncentiveTransaction.created_at >= start,
         IncentiveTransaction.created_at < end,
-        IncentiveTransaction.kuaishou_verified == True,
+        or_(
+            IncentiveTransaction.network_verified == True,
+            IncentiveTransaction.kuaishou_verified == True,
+        ),
         IncentiveTransaction.taku_verified == False,
     ).all()
     count = 0

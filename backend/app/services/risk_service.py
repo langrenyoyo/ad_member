@@ -37,6 +37,7 @@ def evaluate_risk(
     start = _today_start()
 
     daily_limit = cfg_int(cfg, "daily_ad_limit", 50)
+    interval_seconds = max(0, cfg_int(cfg, "incentive_interval_seconds", 30))
     device_limit = cfg_int(cfg, "device_daily_limit", 30)
     ip_limit = cfg_int(cfg, "ip_daily_limit", 100)
     block_score = cfg_int(cfg, "risk_block_score", 70)
@@ -49,6 +50,26 @@ def evaluate_risk(
     if uid_count >= daily_limit:
         score += 40
         hits.append({"rule": "用户日激励超限", "score": 40, "detail": f"{uid_count}/{daily_limit}"})
+
+    if interval_seconds > 0:
+        latest = (
+            db.query(IncentiveTransaction)
+            .filter(
+                IncentiveTransaction.uid == uid,
+                IncentiveTransaction.status != "rejected",
+            )
+            .order_by(IncentiveTransaction.created_at.desc())
+            .first()
+        )
+        if latest:
+            elapsed_seconds = max(0, int((datetime.utcnow() - latest.created_at).total_seconds()))
+            if elapsed_seconds < interval_seconds:
+                detail = f"{elapsed_seconds}s/{interval_seconds}s"
+                _log_decision(db, uid, trans_id, "用户激励间隔不足", 100, 100, "block", detail)
+                db.add(ContainmentLog(uid=uid, reason=f"用户激励间隔不足 {detail}", action="block"))
+                return False, 100, [
+                    {"rule": "用户激励间隔不足", "score": 100, "detail": detail}
+                ]
 
     if device_id:
         dev_count = db.query(IncentiveTransaction).filter(

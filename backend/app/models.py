@@ -89,6 +89,10 @@ class TakuApp(Base):
     platform: Mapped[int] = mapped_column(Integer, default=2)  # 1Android 2iOS
     package_name: Mapped[str] = mapped_column(String(128), default="")
     kuaishou_security_key: Mapped[str] = mapped_column(String(128), default="")
+    tencent_security_key: Mapped[str] = mapped_column(String(128), default="")
+    tencent_sign_method: Mapped[str] = mapped_column(String(32), default="hmac_sha256")
+    baidu_security_key: Mapped[str] = mapped_column(String(128), default="")
+    baidu_sign_method: Mapped[str] = mapped_column(String(32), default="md5_secret_colon_transid")
     synced_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
@@ -111,6 +115,9 @@ class IncentiveTransaction(Base):
     app_id: Mapped[str] = mapped_column(String(64), default="")
     placement_id: Mapped[str] = mapped_column(String(64), default="")
     network_firm_id: Mapped[int] = mapped_column(Integer, default=28)
+    network_code: Mapped[str] = mapped_column(String(16), default="kuaishou", index=True)
+    network_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    network_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     revenue: Mapped[float] = mapped_column(Float, default=0.0)
     user_reward: Mapped[float] = mapped_column(Float, default=0.0)
     status: Mapped[str] = mapped_column(String(16), default="pending", index=True)

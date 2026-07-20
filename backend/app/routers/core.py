@@ -20,6 +20,10 @@ def taku_apps(admin_id: int = Depends(get_admin_id), db: Session = Depends(get_d
         "platform": a.platform,
         "package_name": a.package_name,
         "kuaishou_security_key": a.kuaishou_security_key,
+        "tencent_security_key": a.tencent_security_key,
+        "tencent_sign_method": a.tencent_sign_method,
+        "baidu_security_key": a.baidu_security_key,
+        "baidu_sign_method": a.baidu_sign_method,
         "synced_at": a.synced_at.isoformat(),
     } for a in apps])
 
@@ -30,6 +34,10 @@ class SyncAppBody(BaseModel):
     platform: int = 2
     package_name: str = ""
     kuaishou_security_key: str = ""
+    tencent_security_key: str = ""
+    tencent_sign_method: str = "hmac_sha256"
+    baidu_security_key: str = ""
+    baidu_sign_method: str = "md5_secret_colon_transid"
 
 
 @router.post("/core/cron/takuapps/sync")
@@ -40,6 +48,10 @@ def sync_taku_app(body: SyncAppBody, admin_id: int = Depends(get_admin_id), db: 
         existing.platform = body.platform
         existing.package_name = body.package_name
         existing.kuaishou_security_key = body.kuaishou_security_key
+        existing.tencent_security_key = body.tencent_security_key
+        existing.tencent_sign_method = body.tencent_sign_method
+        existing.baidu_security_key = body.baidu_security_key
+        existing.baidu_sign_method = body.baidu_sign_method
         existing.synced_at = datetime.utcnow()
     else:
         db.add(TakuApp(
@@ -48,6 +60,10 @@ def sync_taku_app(body: SyncAppBody, admin_id: int = Depends(get_admin_id), db: 
             platform=body.platform,
             package_name=body.package_name,
             kuaishou_security_key=body.kuaishou_security_key,
+            tencent_security_key=body.tencent_security_key,
+            tencent_sign_method=body.tencent_sign_method,
+            baidu_security_key=body.baidu_security_key,
+            baidu_sign_method=body.baidu_sign_method,
         ))
     db.commit()
     return ok()

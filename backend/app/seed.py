@@ -58,21 +58,6 @@ def _seed_initial(db: Session) -> None:
     ]
     db.add_all(apps)
 
-    configs = [
-        SystemConfig(key="ad_risk_enabled", value="1"),
-        SystemConfig(key="daily_ad_limit", value="50"),
-        SystemConfig(key="min_withdraw", value="10"),
-        SystemConfig(key="taku_publisher_key", value=""),
-        SystemConfig(key="reward_share_rate", value="0.88"),
-        SystemConfig(key="confirm_delay_days", value="1"),
-        SystemConfig(key="gap_alert_rate", value="0.08"),
-        SystemConfig(key="taku_wait_seconds", value="5"),
-        SystemConfig(key="device_daily_limit", value="30"),
-        SystemConfig(key="risk_block_score", value="70"),
-        SystemConfig(key="ip_daily_limit", value="100"),
-    ]
-    db.add_all(configs)
-
     models = ["iPhone 15 Pro", "iPhone 14", "Redmi K70", "OPPO A58", "vivo Y78", "HUAWEI Mate 60"]
     uniques = ["oaid_demo_001", "idfa_demo_002", "", "oaid_demo_004", "", "idfa_demo_006"]
     now = datetime.utcnow()

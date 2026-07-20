@@ -5,6 +5,7 @@ from ..models import SystemConfig
 DEFAULT_RISK_CONFIG = {
     "ad_risk_enabled": "1",
     "daily_ad_limit": "50",
+    "incentive_interval_seconds": "30",
     "min_withdraw": "10",
     "taku_publisher_key": "",
     "reward_share_rate": "0.88",

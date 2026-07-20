@@ -9,6 +9,11 @@
           <el-option label="已扣回" value="clawback" />
           <el-option label="已拒绝" value="rejected" />
         </el-select>
+        <el-select v-model="query.network_code" placeholder="广告平台" clearable style="width: 140px">
+          <el-option label="快手" value="kuaishou" />
+          <el-option label="腾讯优量汇" value="tencent" />
+          <el-option label="百度广告" value="baidu" />
+        </el-select>
         <el-button type="primary" @click="load">查询</el-button>
       </div>
 
@@ -17,9 +22,12 @@
         <el-table-column prop="uid" label="UID" width="100" />
         <el-table-column prop="user_reward" label="用户奖励" width="90" />
         <el-table-column prop="revenue" label="平台收益" width="90" />
+        <el-table-column prop="network_code" label="广告平台" width="110">
+          <template #default="{ row }">{{ networkLabel(row.network_code) }}</template>
+        </el-table-column>
         <el-table-column label="双回调" width="120">
           <template #default="{ row }">
-            <el-tag :type="row.kuaishou_verified ? 'success' : 'info'" size="small">快手</el-tag>
+            <el-tag :type="row.network_verified || row.kuaishou_verified ? 'success' : 'info'" size="small">平台</el-tag>
             <el-tag :type="row.taku_verified ? 'success' : 'info'" size="small" class="m-l-4">Taku</el-tag>
           </template>
         </el-table-column>
@@ -56,7 +64,9 @@ import { incentiveStatusLabel, incentiveStatusType } from '@/utils/statusLabels'
 const loading = ref(false)
 const list = ref([])
 const total = ref(0)
-const query = reactive({ page: 1, limit: 20, uid: '', status: '' })
+const query = reactive({ page: 1, limit: 20, uid: '', status: '', network_code: '' })
+
+const networkLabel = (code) => ({ kuaishou: '快手', tencent: '腾讯优量汇', baidu: '百度广告' }[code] || code || '-')
 
 async function load() {
   loading.value = true

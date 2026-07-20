@@ -10,6 +10,10 @@
         <el-form-item label="用户日激励上限">
           <el-input-number v-model="form.daily_ad_limit" :min="1" :max="999" />
         </el-form-item>
+        <el-form-item label="激励最小间隔（秒）">
+          <el-input-number v-model="form.incentive_interval_seconds" :min="0" :max="86400" />
+          <span class="hint">同一用户两次激励的最短间隔，设为 0 表示关闭</span>
+        </el-form-item>
         <el-form-item label="设备日激励上限">
           <el-input-number v-model="form.device_daily_limit" :min="1" :max="999" />
         </el-form-item>
@@ -52,6 +56,12 @@
         <el-form-item label="Taku S2S 回调">
           <el-input readonly value="/mas/callback/taku/s2s" />
         </el-form-item>
+        <el-form-item label="腾讯激励回调">
+          <el-input readonly value="/mas/callback/tencent/reward" />
+        </el-form-item>
+        <el-form-item label="百度激励回调">
+          <el-input readonly value="/mas/callback/baidu/reward" />
+        </el-form-item>
 
         <el-form-item>
           <el-button type="primary" @click="handleSave">保存配置</el-button>
@@ -70,6 +80,7 @@ const loading = ref(false)
 const form = reactive({
   ad_risk_enabled: '1',
   daily_ad_limit: 50,
+  incentive_interval_seconds: 30,
   device_daily_limit: 30,
   ip_daily_limit: 100,
   risk_block_score: 70,
@@ -89,6 +100,7 @@ async function load() {
     Object.assign(form, {
       ad_risk_enabled: data.ad_risk_enabled || '1',
       daily_ad_limit: Number(data.daily_ad_limit || 50),
+      incentive_interval_seconds: Number(data.incentive_interval_seconds ?? 30),
       device_daily_limit: Number(data.device_daily_limit || 30),
       ip_daily_limit: Number(data.ip_daily_limit || 100),
       risk_block_score: Number(data.risk_block_score || 70),
@@ -108,6 +120,7 @@ async function handleSave() {
   await saveRiskConfig({
     ad_risk_enabled: String(form.ad_risk_enabled),
     daily_ad_limit: String(form.daily_ad_limit),
+    incentive_interval_seconds: String(form.incentive_interval_seconds),
     device_daily_limit: String(form.device_daily_limit),
     ip_daily_limit: String(form.ip_daily_limit),
     risk_block_score: String(form.risk_block_score),

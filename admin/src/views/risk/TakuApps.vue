@@ -13,6 +13,12 @@
         </el-table-column>
         <el-table-column prop="package_name" label="包名" min-width="160" show-overflow-tooltip />
         <el-table-column prop="kuaishou_security_key" label="快手 SecurityKey" min-width="140" show-overflow-tooltip />
+        <el-table-column label="腾讯接入" width="110">
+          <template #default="{ row }"><el-tag :type="row.tencent_security_key ? 'success' : 'info'">{{ row.tencent_security_key ? '已配置' : '未配置' }}</el-tag></template>
+        </el-table-column>
+        <el-table-column label="百度接入" width="110">
+          <template #default="{ row }"><el-tag :type="row.baidu_security_key ? 'success' : 'info'">{{ row.baidu_security_key ? '已配置' : '未配置' }}</el-tag></template>
+        </el-table-column>
         <el-table-column prop="synced_at" label="同步时间" width="170" />
       </el-table>
     </div>
@@ -30,6 +36,28 @@
         <el-form-item label="包名"><el-input v-model="form.package_name" /></el-form-item>
         <el-form-item label="快手 SecurityKey">
           <el-input v-model="form.kuaishou_security_key" type="password" show-password />
+        </el-form-item>
+        <el-divider content-position="left">腾讯优量汇</el-divider>
+        <el-form-item label="腾讯回调密钥">
+          <el-input v-model="form.tencent_security_key" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="腾讯签名方式">
+          <el-select v-model="form.tencent_sign_method" style="width: 100%">
+            <el-option label="HMAC-SHA256（流水号）" value="hmac_sha256" />
+            <el-option label="SHA256（密钥:流水号）" value="sha256_secret_colon_transid" />
+            <el-option label="MD5（参数排序）" value="md5_canonical" />
+          </el-select>
+        </el-form-item>
+        <el-divider content-position="left">百度广告</el-divider>
+        <el-form-item label="百度回调密钥">
+          <el-input v-model="form.baidu_security_key" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="百度签名方式">
+          <el-select v-model="form.baidu_sign_method" style="width: 100%">
+            <el-option label="MD5（密钥:流水号）" value="md5_secret_colon_transid" />
+            <el-option label="MD5（参数排序）" value="md5_canonical" />
+            <el-option label="HMAC-SHA256（流水号）" value="hmac_sha256" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -54,6 +82,10 @@ const form = reactive({
   platform: 2,
   package_name: '',
   kuaishou_security_key: '',
+  tencent_security_key: '',
+  tencent_sign_method: 'hmac_sha256',
+  baidu_security_key: '',
+  baidu_sign_method: 'md5_secret_colon_transid',
 })
 
 async function load() {

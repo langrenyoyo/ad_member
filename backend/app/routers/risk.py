@@ -51,6 +51,7 @@ def risk_transactions(
     limit: int = 20,
     uid: str = "",
     status: str = "",
+    network_code: str = "",
     admin_id: int = Depends(get_admin_id),
     db: Session = Depends(get_db),
 ):
@@ -59,6 +60,8 @@ def risk_transactions(
         q = q.filter(IncentiveTransaction.uid == uid)
     if status:
         q = q.filter(IncentiveTransaction.status == status)
+    if network_code:
+        q = q.filter(IncentiveTransaction.network_code == network_code)
     total = q.count()
     items = q.order_by(IncentiveTransaction.id.desc()).offset((page - 1) * limit).limit(limit).all()
     return ok(
@@ -75,6 +78,9 @@ def _tx_item(t: IncentiveTransaction) -> dict:
         "app_id": t.app_id,
         "placement_id": t.placement_id,
         "network_firm_id": t.network_firm_id,
+        "network_code": t.network_code,
+        "network_verified": t.network_verified,
+        "network_at": t.network_at.isoformat() if t.network_at else "",
         "revenue": t.revenue,
         "user_reward": t.user_reward,
         "status": t.status,
