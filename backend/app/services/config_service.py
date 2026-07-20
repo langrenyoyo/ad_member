@@ -15,6 +15,10 @@ DEFAULT_RISK_CONFIG = {
     "device_daily_limit": "30",
     "risk_block_score": "70",
     "ip_daily_limit": "100",
+    "app_api_auth_enabled": "1",
+    "app_api_key": "ad_member_app",
+    "app_api_secret": "",
+    "app_api_time_window_seconds": "300",
 }
 
 

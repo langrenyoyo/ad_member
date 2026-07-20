@@ -15,6 +15,10 @@ admin/node_modules/
 # Vite
 admin/node_modules/.vite/
 
+# Runtime logs
+*-server.log
+*-server.err.log
+
 # IDE / OS
 .idea/
 .vscode/

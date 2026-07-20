@@ -3,13 +3,13 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from .database import Base, engine, SessionLocal
 from .migrate import ensure_configs, run_migrations
 from .seed import seed
 from .services.config_service import DEFAULT_RISK_CONFIG
-from .routers import login, index, member, adandrisk, core, callback, risk
+from .routers import login, index, member, adandrisk, core, callback, risk, app_client
 
 ADMIN_DIST = Path(__file__).resolve().parent.parent.parent / "admin" / "dist"
 
@@ -38,6 +38,16 @@ app.add_middleware(
 )
 
 mas = FastAPI()
+
+
+@mas.exception_handler(app_client.AppAuthError)
+async def app_auth_error_handler(request, exc):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"code": exc.code, "msg": exc.msg},
+    )
+
+
 mas.include_router(login.router)
 mas.include_router(index.router)
 mas.include_router(member.router)
@@ -45,6 +55,7 @@ mas.include_router(adandrisk.router)
 mas.include_router(core.router)
 mas.include_router(callback.router)
 mas.include_router(risk.router)
+mas.include_router(app_client.router)
 
 app.mount("/mas", mas)
 

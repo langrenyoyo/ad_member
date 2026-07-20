@@ -135,6 +135,7 @@ def process_kuaishou_callback(
     )
 
     if not sign_ok:
+        db.commit()
         return {"ok": False, "reason": "sign_invalid"}
 
     bind_member_device_from_params(db, uid, params, "kuaishou")
