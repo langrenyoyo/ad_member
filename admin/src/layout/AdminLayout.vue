@@ -31,6 +31,7 @@
           <el-menu-item index="/risk/reconcile">收益对账</el-menu-item>
           <el-menu-item index="/risk/clawback">核减查询</el-menu-item>
           <el-menu-item index="/risk/taku">Taku 应用</el-menu-item>
+          <el-menu-item index="/risk/taku-placements">Taku 广告位</el-menu-item>
           <el-menu-item index="/risk/logs">风控日志</el-menu-item>
         </el-sub-menu>
       </el-menu>

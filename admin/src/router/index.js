@@ -79,6 +79,12 @@ const routes = [
         component: () => import('@/views/risk/RiskLogs.vue'),
         meta: { title: '风控日志', parent: '广告联盟与风控' },
       },
+      {
+        path: 'risk/taku-placements',
+        name: 'risk_taku_placements',
+        component: () => import('@/views/risk/TakuPlacements.vue'),
+        meta: { title: 'Taku 广告位', parent: '广告联盟与风控' },
+      },
     ],
   },
 ]

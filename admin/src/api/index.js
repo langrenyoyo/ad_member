@@ -26,6 +26,8 @@ export const getContainmentLog = (params) => request.get('/adandrisk/containment
 
 export const getTakuApps = () => request.get('/core/cron/takuapps')
 export const syncTakuApp = (data) => request.post('/core/cron/takuapps/sync', data)
+export const getTakuPlacements = (appId) => request.get('/core/cron/takuplacements', { params: appId ? { app_id: appId } : {} })
+export const syncTakuPlacements = (data) => request.post('/core/cron/takuplacements/sync', data)
 export const getConfig = () => request.get('/config/index')
 export const saveConfig = (configs) => request.post('/config/ConfigSaveAll', { configs })
 

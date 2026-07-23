@@ -48,6 +48,12 @@
         <el-form-item label="Taku Publisher Key">
           <el-input v-model="form.taku_publisher_key" type="password" show-password />
         </el-form-item>
+        <el-form-item label="Taku 媒体 App ID">
+          <el-input v-model="form.taku_media_app_id" placeholder="一个后台只绑定一个媒体 App ID" />
+        </el-form-item>
+        <el-form-item label="Taku App Key">
+          <el-input v-model="form.taku_app_key" placeholder="填写 TAKU 开发者后台的 App Key" />
+        </el-form-item>
 
         <el-divider content-position="left">回调地址</el-divider>
         <el-form-item label="快手激励回调">
@@ -90,6 +96,8 @@ const form = reactive({
   gap_alert_rate: 0.08,
   min_withdraw: 10,
   taku_publisher_key: '',
+  taku_media_app_id: '',
+  taku_app_key: '',
 })
 
 async function load() {
@@ -110,6 +118,8 @@ async function load() {
       gap_alert_rate: Number(data.gap_alert_rate || 0.08),
       min_withdraw: Number(data.min_withdraw || 10),
       taku_publisher_key: data.taku_publisher_key || '',
+      taku_media_app_id: data.taku_media_app_id || '',
+      taku_app_key: data.taku_app_key || '',
     })
   } finally {
     loading.value = false
@@ -130,6 +140,8 @@ async function handleSave() {
     gap_alert_rate: String(form.gap_alert_rate),
     min_withdraw: String(form.min_withdraw),
     taku_publisher_key: form.taku_publisher_key,
+    taku_media_app_id: form.taku_media_app_id,
+    taku_app_key: form.taku_app_key,
   })
   ElMessage.success('配置已保存')
 }

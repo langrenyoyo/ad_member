@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from ..auth import fail, ok
 from ..database import get_db
-from ..models import AdLog, IncentiveTransaction, Member, MemberDevice, TakuApp
+from ..models import AdLog, IncentiveTransaction, Member, MemberDevice, TakuApp, TakuPlacement
 from ..services.config_service import cfg_int, get_config_map
 from ..services.device_service import bind_member_device
 from ..services.risk_service import evaluate_risk
@@ -30,6 +30,7 @@ PUBLIC_CONFIG_KEYS = (
     "taku_wait_seconds",
     "device_daily_limit",
     "ip_daily_limit",
+    "taku_app_key",
 )
 
 
@@ -268,6 +269,16 @@ def _taku_app_payload(app: TakuApp) -> dict:
     }
 
 
+def _taku_placement_payload(placement: TakuPlacement) -> dict:
+    return {
+        "placement_id": placement.placement_id,
+        "app_id": placement.app_id,
+        "placement_name": placement.placement_name,
+        "ad_format": placement.ad_format,
+        "platform": placement.platform,
+    }
+
+
 def _callback_urls() -> dict:
     return {
         "kuaishou": "/mas/callback/kuaishou/reward",
@@ -279,10 +290,22 @@ def _callback_urls() -> dict:
 
 @router.get("/config")
 def app_config(db: Session = Depends(get_db)):
-    apps = db.query(TakuApp).order_by(TakuApp.id.desc()).all()
+    cfg = get_config_map(db)
+    media_app_id = cfg.get("taku_media_app_id", "")
+    apps = []
+    placements = []
+    if media_app_id:
+        apps = db.query(TakuApp).filter(
+            TakuApp.app_id == media_app_id
+        ).order_by(TakuApp.id.desc()).all()
+        placements = db.query(TakuPlacement).filter(
+            TakuPlacement.app_id == media_app_id,
+            TakuPlacement.status == "active",
+        ).order_by(TakuPlacement.id.asc()).all()
     return ok({
         "config": _public_config(db),
         "taku_apps": [_taku_app_payload(app) for app in apps],
+        "taku_placements": [_taku_placement_payload(item) for item in placements],
         "callback_urls": _callback_urls(),
     })
 

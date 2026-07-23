@@ -96,6 +96,20 @@ class TakuApp(Base):
     synced_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
+class TakuPlacement(Base):
+    __tablename__ = "taku_placements"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    placement_id: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    app_id: Mapped[str] = mapped_column(String(64), index=True, default="")
+    placement_name: Mapped[str] = mapped_column(String(128), default="")
+    ad_format: Mapped[str] = mapped_column(String(64), default="")
+    platform: Mapped[str] = mapped_column(String(32), default="")
+    status: Mapped[str] = mapped_column(String(32), default="active")
+    raw_data: Mapped[str] = mapped_column(Text, default="")
+    synced_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
 class SystemConfig(Base):
     __tablename__ = "system_configs"
 
